@@ -41,6 +41,7 @@ function onSearchRequest(evt) {
   imgApiService.resetPage();
   imgApiService.fetchImg().then(images => {
     if (images.totalHits === 0) {
+      loadMoreBtn.hide();
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
