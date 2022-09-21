@@ -8,7 +8,7 @@ export default class ImgApiService {
     this.page = 1;
   }
 
-  async fetchImg(searchQuery) {
+  async fetchImg() {
     try {
       const searchParams = new URLSearchParams({
         key: API_KEY,
