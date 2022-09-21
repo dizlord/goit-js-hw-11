@@ -11,13 +11,12 @@ const imgApiService = new ImgApiService();
 const refs = {
   formEl: document.querySelector('#search-form'),
   galleryContainer: document.querySelector('.gallery'),
-  // loadMoreBtn: document.querySelector('.load-more'),
 };
 
 const { height: pageHeaderHeight } = document
   .querySelector('.search-form')
   .getBoundingClientRect();
-document.body.style.paddingTop = `${pageHeaderHeight}px`;
+document.body.style.paddingTop = `${pageHeaderHeight + 5}px`;
 
 const loadMoreBtn = new LoadMoreBtn({ selector: '.load-more', hidden: true });
 
@@ -28,6 +27,8 @@ function onSearchRequest(evt) {
   evt.preventDefault();
 
   imgApiService.query = evt.currentTarget.elements.searchQuery.value;
+  refs.galleryContainer.innerHTML = '';
+  loadMoreBtn.hide();
   if (!imgApiService.query.trim()) {
     Notiflix.Notify.failure(
       'Sorry, you have to enter query string. Please try again.'
@@ -38,7 +39,6 @@ function onSearchRequest(evt) {
   loadMoreBtn.show();
   loadMoreBtn.disable();
   imgApiService.resetPage();
-  refs.galleryContainer.innerHTML = '';
   imgApiService.fetchImg().then(images => {
     if (images.totalHits === 0) {
       Notiflix.Notify.failure(
@@ -59,6 +59,20 @@ function onLoadMore() {
     appendImgMarkup(images.hits);
     simpleLigthbox.refresh();
     loadMoreBtn.enable();
+    if ((imgApiService.page - 1) * imgApiService.per_page > images.totalHits) {
+      loadMoreBtn.hide();
+      Notiflix.Notify.info(
+        `We're sorry, but you've reached the end of search results.`
+      );
+    }
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
   });
 }
 

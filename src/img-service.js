@@ -6,6 +6,7 @@ export default class ImgApiService {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
+    this.per_page = 40;
   }
 
   async fetchImg() {
@@ -16,7 +17,7 @@ export default class ImgApiService {
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: true,
-        per_page: 40,
+        per_page: this.per_page,
         page: this.page,
       });
       const response = await axios.get(`${BASE_URL}?${searchParams}`);
