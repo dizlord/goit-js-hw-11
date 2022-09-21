@@ -2,27 +2,106 @@ import './css/styles.css';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { fetchCountries } from './fetchCountries';
+import ImgApiService from './img-service';
+import LoadMoreBtn from './load-more-btn';
 
+const imgApiService = new ImgApiService();
 const refs = {
   formEl: document.querySelector('#search-form'),
   galleryContainer: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('.load-more'),
+  // loadMoreBtn: document.querySelector('.load-more'),
 };
 
+const { height: pageHeaderHeight } = document
+  .querySelector('.search-form')
+  .getBoundingClientRect();
+document.body.style.paddingTop = `${pageHeaderHeight}px`;
+
+const loadMoreBtn = new LoadMoreBtn({ selector: '.load-more', hidden: true });
+
 refs.formEl.addEventListener('submit', onSearchRequest);
+loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
 function onSearchRequest(evt) {
   evt.preventDefault();
 
-  const searchQuery = evt.currentTarget.elements.searchQuery.value;
+  imgApiService.query = evt.currentTarget.elements.searchQuery.value;
+  if (!imgApiService.query.trim()) {
+    Notiflix.Notify.failure(
+      'Sorry, you have to enter query string. Please try again.'
+    );
+    return;
+  }
+
+  loadMoreBtn.show();
+  loadMoreBtn.disable();
+  imgApiService.resetPage();
+  refs.galleryContainer.innerHTML = '';
+  imgApiService.fetchImg().then(images => {
+    if (images.totalHits === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
+    Notiflix.Notify.info(`Hooray! We found ${images.totalHits} images.`);
+    appendImgMarkup(images.hits);
+    simpleLigthbox.refresh();
+    loadMoreBtn.enable();
+  });
 }
 
-// Notiflix.Notify.failure('Oops, there is no country with that name');
-// Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
+function onLoadMore() {
+  loadMoreBtn.disable();
+  imgApiService.fetchImg().then(images => {
+    appendImgMarkup(images.hits);
+    simpleLigthbox.refresh();
+    loadMoreBtn.enable();
+  });
+}
 
-// function clearCountryContainer() {
-//   refs.countryListUl.innerHTML = '';
-//   refs.countryInfoDiv.innerHTML = '';
-// }
+function appendImgMarkup(images = []) {
+  const imgMarkup = images
+    .map(image => {
+      return `
+      
+      <a class="gallery__item" href="${image.largeImageURL}">
+        <div class="photo-card">
+          <img class="gallery__image" src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />  
+          <div class="info">
+            <p class="info-item">
+              <b class="info-name">Likes</b>
+              <span class="info-number">${image.likes}</span>
+            </p>
+            <p class="info-item">
+              <b class="info-name">Views</b>
+              <span class="info-number">${image.views}</span>
+            </p>
+            <p class="info-item">
+              <b class="info-name">Comments</b>
+              <span class="info-number">${image.comments}</span>
+            </p>
+            <p class="info-item">
+              <b class="info-name">Downloads</b>
+              <span class="info-number">${image.downloads}</span>
+            </p>
+          </div>
+          </div>
+          </a>
+
+      `;
+    })
+    .join('');
+  refs.galleryContainer.insertAdjacentHTML('beforeend', imgMarkup);
+}
+
+const simpleLigthbox = new SimpleLightbox('.gallery a', {
+  nav: true,
+  close: true,
+  caption: true,
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});

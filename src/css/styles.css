@@ -1,3 +1,8 @@
+:root {
+  --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-duration: 250ms;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -33,4 +38,133 @@ img {
 
 h1,h2,h3,h4,h5,h6,p {
   margin: 0;
+}
+
+.search-form {
+  z-index: 10;
+  position: fixed;
+  top: 0px;
+  padding: 5px;
+  width: 100%;
+  display: block;
+  text-align: center;
+  background-color: rgb(87, 126, 186);
+}
+
+.form-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.search-form__input {
+  padding: 5px;
+  width: 200px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  outline: none;
+}
+
+.search-form__btn {
+  padding: 5px;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgb(243, 243, 243);
+  cursor: pointer;
+}
+
+.search-form__btn:hover, .search-form__btn:focus {
+  background-color: antiquewhite;
+}
+
+.gallery {
+  display: grid;
+  max-width: 1200px;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  /* grid-auto-rows: minmax(240px, auto); */
+  grid-gap: 12px;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
+.gallery__item {
+  position: relative;
+  text-decoration: none;
+  color: #212121;
+  font-size: 10px;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+}
+
+.gallery__image:hover {
+  transform: scale(1.03);
+}
+
+.gallery__image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition: transform var(--animation-duration) var(--timing-function);
+}
+
+.gallery__link {
+  display: block;
+  text-decoration: none;
+  height: 100%;
+}
+
+.gallery__link:hover {
+  cursor: zoom-in;
+}
+
+.info {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 1fr;
+  /* grid-auto-rows: minmax(50px, auto); */
+  padding: 10px 5px;
+}
+
+.info-item {
+  /* display: ;
+  flex-direction: column; */
+  text-align: center;
+}
+
+.photo-card {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  /* grid-gap: 10px; */
+}
+
+.photo-card .info {
+  /* align-self: end; */
+}
+
+.info-number {
+  display: block;
+  margin-top: 5px;
+}
+
+.btn.load-more {
+  display: block;
+  padding: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  border: none;
+  border-radius: 10px;
+  background-color: rgb(87, 126, 186);
+}
+
+.load-more.is-hidden {
+  display: none;
+}
+
+.load-more > .spinner.is-hidden {
+  display: none;
 }
